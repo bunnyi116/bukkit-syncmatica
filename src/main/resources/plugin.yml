@@ -1,0 +1,4 @@
+name: syncmatica
+version: '${project.version}'
+main: com.github.bunnyi.syncmatica.Syncmatica
+api-version: '1.20'
