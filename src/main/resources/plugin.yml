@@ -2,3 +2,9 @@ name: syncmatica
 version: '${project.version}'
 main: com.github.bunnyi.syncmatica.Syncmatica
 api-version: '1.20'
+
+commands:
+  test:
+    description: This is a demo command.
+    usage: /<command> [player]
+    permission-message: You don't have <permission>

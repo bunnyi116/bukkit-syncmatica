@@ -70,5 +70,12 @@
             <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-buffer -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.97.Final</version>
+        </dependency>
     </dependencies>
 </project>
