@@ -1,4 +1,6 @@
-package com.github.bunnyi.syncmatica;
+package com.github.bunnyi.syncmatica.communication;
+
+import com.github.bunnyi.syncmatica.Feature;
 
 import java.util.*;
 
@@ -6,18 +8,22 @@ import java.util.*;
 // or has enabled/disabled
 
 public class FeatureSet {
-
     private static final Map<String, FeatureSet> versionFeatures;
     private final Collection<Feature> features;
 
+    static {
+        versionFeatures = new HashMap<>();
+        versionFeatures.put("0.1", new FeatureSet(Collections.singletonList(Feature.CORE)));
+    }
+
     public static FeatureSet fromVersionString(String version) {
         if (version.matches("^\\d+(\\.\\d+){2,4}$")) {
-            final int minSize = version.indexOf(".");
+            int minSize = version.indexOf(".");
             while (version.length() > minSize) {
                 if (versionFeatures.containsKey(version)) {
                     return versionFeatures.get(version);
                 }
-                final int lastDot = version.lastIndexOf(".");
+                int lastDot = version.lastIndexOf(".");
                 version = version.substring(0, lastDot);
             }
         }
@@ -25,9 +31,9 @@ public class FeatureSet {
     }
 
     public static FeatureSet fromString(final String features) {
-        final FeatureSet featureSet = new FeatureSet(new ArrayList<>());
+        FeatureSet featureSet = new FeatureSet(new ArrayList<>());
         for (final String feature : features.split("\n")) {
-            final Feature f = Feature.fromString(feature);
+            Feature f = Feature.fromString(feature);
             if (f != null) {
                 featureSet.features.add(f);
             }
@@ -46,17 +52,13 @@ public class FeatureSet {
         return output.toString();
     }
 
-    public FeatureSet(final Collection<Feature> features) {
+    public FeatureSet(Collection<Feature> features) {
         this.features = features;
     }
 
-    public boolean hasFeature(final Feature f) {
-        return features.contains(f);
+    public boolean hasFeature(Feature feature) {
+        return features.contains(feature);
     }
 
-    static {
-        versionFeatures = new HashMap<>();
-        versionFeatures.put("0.1", new FeatureSet(Collections.singletonList(Feature.CORE)));
-    }
 
 }

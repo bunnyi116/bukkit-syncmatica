@@ -1,4 +1,6 @@
-package com.github.bunnyi.syncmatica;
+package com.github.bunnyi.syncmatica.communication;
+
+import com.github.bunnyi.syncmatica.util.Identifier;
 
 public enum PacketType {
     REGISTER_METADATA("syncmatica:register_metadata"),
@@ -75,15 +77,15 @@ public enum PacketType {
     // sends a message from client to server - allows for future compatability
     // can't fix the typo here lol
 
-    private final String identifier;
+    public final Identifier identifier;
 
     PacketType(final String id) {
-        identifier = id;
+        identifier = new Identifier(id);
     }
 
-    public static boolean containsIdentifier(String id) {
+    public static boolean containsIdentifier(final Identifier id) {
         for (final PacketType p : PacketType.values()) {
-            if (id.equals(p.identifier)) {
+            if (id.equals(p.identifier)) { // this took I kid you not 4-5 hours to find
                 return true;
             }
         }
@@ -92,6 +94,6 @@ public enum PacketType {
 
     @Override
     public String toString() {
-        return identifier;
+        return identifier.toString();
     }
 }
