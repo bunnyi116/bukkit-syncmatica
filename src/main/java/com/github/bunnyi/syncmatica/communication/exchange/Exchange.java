@@ -14,7 +14,7 @@ public abstract class Exchange {
     private boolean success = false;
     private boolean finished = false;
 
-    public Exchange(final ExchangeTarget partner, final SyncmaticaContext con) {
+    public Exchange(ExchangeTarget partner, SyncmaticaContext con) {
         this.partner = partner;
         this.context = con;
     }
@@ -33,7 +33,7 @@ public abstract class Exchange {
         return success;
     }
 
-    public void close(final boolean notifyPartner) {
+    public void close(boolean notifyPartner) {
         finished = true;
         success = false;
         onClose();

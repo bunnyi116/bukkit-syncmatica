@@ -20,7 +20,7 @@ public class PlayerIdentifierProvider {
     }
 
     public PlayerIdentifier createOrGet(ExchangeTarget exchangeTarget) {
-        final ServerCommunicationManager profileProvider = (ServerCommunicationManager) context.communicationManager;
+        ServerCommunicationManager profileProvider = (ServerCommunicationManager) context.communicationManager;
         return createOrGet(profileProvider.getPlayerProfile(exchangeTarget));
     }
 
@@ -28,23 +28,19 @@ public class PlayerIdentifierProvider {
         return createOrGet(gameProfile.getUniqueId(), gameProfile.getName());
     }
 
-    public PlayerIdentifier createOrGet(final UUID uuid, final String playerName) {
+    public PlayerIdentifier createOrGet(UUID uuid, String playerName) {
         return identifiers.computeIfAbsent(uuid, id -> new PlayerIdentifier(uuid, playerName));
     }
 
-    public void updateName(final UUID uuid, final String playerName) {
+    public void updateName(UUID uuid, String playerName) {
         createOrGet(uuid, playerName).updatePlayerName(playerName);
     }
 
-    public PlayerIdentifier fromJson(final JsonObject obj) {
-        if (!obj.has("uuid") || !obj.has("name")) {
-            return PlayerIdentifier.MISSING_PLAYER;
+    public PlayerIdentifier fromJson(JsonObject obj) {
+        if (obj.has("uuid") && obj.has("name")) {
+            UUID jsonUUID = UUID.fromString(obj.get("uuid").getAsString());
+            return identifiers.computeIfAbsent(jsonUUID, key -> new PlayerIdentifier(jsonUUID, obj.get("name").getAsString()));
         }
-
-        final UUID jsonUUID = UUID.fromString(obj.get("uuid").getAsString());
-
-        return identifiers.computeIfAbsent(jsonUUID,
-                key -> new PlayerIdentifier(jsonUUID, obj.get("name").getAsString())
-        );
+        return PlayerIdentifier.MISSING_PLAYER;
     }
 }

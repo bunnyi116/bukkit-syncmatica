@@ -14,7 +14,7 @@ public class QuotaService extends AbstractService {
     Boolean isEnabled = IS_ENABLED_DEFAULT;
     Integer limit = QUOTA_LIMIT_DEFAULT;
 
-    public Boolean isOverQuota(final ExchangeTarget sender, final Integer newData) {
+    public Boolean isOverQuota(ExchangeTarget sender, Integer newData) {
         if (!Boolean.TRUE.equals(isEnabled)) {
             return false;
         }
@@ -23,15 +23,15 @@ public class QuotaService extends AbstractService {
         return curValue > limit;
     }
 
-    public void progressQuota(final ExchangeTarget sender, final Integer newData) {
+    public void progressQuota(ExchangeTarget sender, Integer newData) {
         if (Boolean.TRUE.equals(isEnabled)) {
-            final int curValue = progress.getOrDefault(sender.getPersistentName(), 0);
+            int curValue = progress.getOrDefault(sender.getPersistentName(), 0);
             progress.put(sender.getPersistentName(), curValue + newData);
         }
     }
 
     @Override
-    public void getDefaultConfiguration(final IServiceConfiguration configuration) {
+    public void getDefaultConfiguration(IServiceConfiguration configuration) {
         configuration.saveBoolean("enabled", IS_ENABLED_DEFAULT);
         configuration.saveInteger("limit", QUOTA_LIMIT_DEFAULT);
     }
@@ -42,16 +42,16 @@ public class QuotaService extends AbstractService {
     }
 
     @Override
-    public void configure(final IServiceConfiguration configuration) {
+    public void configure(IServiceConfiguration configuration) {
         configuration.loadBoolean("enabled", b -> isEnabled = b);
         configuration.loadInteger("limit", i -> limit = i);
     }
 
     @Override
-    public void startup() { // NOSONAR
+    public void startup() {
     }
 
     @Override
-    public void shutdown() { // NOSONAR
+    public void shutdown() {
     }
 }

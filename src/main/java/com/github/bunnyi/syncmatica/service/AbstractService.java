@@ -2,12 +2,11 @@ package com.github.bunnyi.syncmatica.service;
 
 import com.github.bunnyi.syncmatica.SyncmaticaContext;
 
-abstract class AbstractService implements IService {
-
-    SyncmaticaContext context;
+public abstract class AbstractService implements IService {
+    private SyncmaticaContext context;
 
     @Override
-    public void setContext(final SyncmaticaContext context) {
+    public void setContext(SyncmaticaContext context) {
         this.context = context;
     }
 

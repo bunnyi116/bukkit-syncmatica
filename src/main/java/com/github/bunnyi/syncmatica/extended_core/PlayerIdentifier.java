@@ -9,28 +9,26 @@ public class PlayerIdentifier {
     public static final UUID MISSING_PLAYER_UUID = UUID.fromString("4c1b738f-56fa-4011-8273-498c972424ea");
     public static final PlayerIdentifier MISSING_PLAYER = new PlayerIdentifier(MISSING_PLAYER_UUID, "No Player");
 
-    public final UUID uuid;
-    private String bufferedPlayerName;
+    public final UUID uuid;     // 玩家UUID
+    private String name;        // 玩家名称
 
     PlayerIdentifier(final UUID uuid, final String bufferedPlayerName) {
         this.uuid = uuid;
-        this.bufferedPlayerName = bufferedPlayerName;
+        this.name = bufferedPlayerName;
     }
 
     public String getName() {
-        return bufferedPlayerName;
+        return name;
     }
 
     public void updatePlayerName(final String name) {
-        bufferedPlayerName = name;
+        this.name = name;
     }
 
     public JsonObject toJson() {
-        final JsonObject jsonObject = new JsonObject();
-
+        JsonObject jsonObject = new JsonObject();
         jsonObject.add("uuid", new JsonPrimitive(uuid.toString()));
-        jsonObject.add("name", new JsonPrimitive(bufferedPlayerName));
-
+        jsonObject.add("name", new JsonPrimitive(name));
         return jsonObject;
     }
 }

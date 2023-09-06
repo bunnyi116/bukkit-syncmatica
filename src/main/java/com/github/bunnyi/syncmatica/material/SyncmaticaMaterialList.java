@@ -11,7 +11,7 @@ public class SyncmaticaMaterialList {
     private ServerPosition deliveryPoint;
 
     public SyncmaticaMaterialEntry getUnclaimedEntry() {
-        final Optional<SyncmaticaMaterialEntry> unclaimed = list.parallelStream().filter(SyncmaticaMaterialEntry.UNFINISHED).filter(SyncmaticaMaterialEntry.UNCLAIMED).findFirst();
+        Optional<SyncmaticaMaterialEntry> unclaimed = list.parallelStream().filter(SyncmaticaMaterialEntry.UNFINISHED).filter(SyncmaticaMaterialEntry.UNCLAIMED).findFirst();
         return unclaimed.orElse(null);
     }
 
@@ -19,8 +19,8 @@ public class SyncmaticaMaterialList {
         if (!list.contains(entry)) {
             throw new IllegalArgumentException();
         }
-        final DeliveryPosition delivery = new DeliveryPosition(deliveryPoint.getBlockPosition(), deliveryPoint.getDimensionId(), entry.getAmountMissing());
-        final ArrayList<DeliveryPosition> deliveryList = new ArrayList<>();
+        DeliveryPosition delivery = new DeliveryPosition(deliveryPoint.getBlockPosition(), deliveryPoint.getDimensionId(), entry.getAmountMissing());
+        ArrayList<DeliveryPosition> deliveryList = new ArrayList<>();
         deliveryList.add(delivery);
         return deliveryList;
     }

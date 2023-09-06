@@ -14,13 +14,16 @@ import com.google.gson.JsonObject;
 import java.io.*;
 import java.util.Arrays;
 
+/**
+ * 同步投影上下文
+ */
 public class SyncmaticaContext {
-    public final File configFolder;
-    public final File configFile;
-    public final File litematicFolder;
-    public final FileStorage fileStorage;
-    public final ServerCommunicationManager communicationManager;
-    public final SyncmaticManager syncmaticManager;
+    public final File configFolder;                                 // 配置文件夹
+    public final File configFile;                                   // 配置文件
+    public final File litematicFolder;                              // 投影配置文件夹
+    public final FileStorage fileStorage;                           // 文件存储对象
+    public final ServerCommunicationManager communicationManager;   // 服务器通信管理器
+    public final SyncmaticaManager syncmaticaManager;               // 同步管理器
     public final QuotaService quotaService;
     public final DebugService debugService;
     public final PlayerIdentifierProvider playerIdentifierProvider;
@@ -35,7 +38,7 @@ public class SyncmaticaContext {
         this.configFile = new File(configFolder, "config.json");
         this.fileStorage = new FileStorage(this);
         this.communicationManager = new ServerCommunicationManager(this);
-        this.syncmaticManager = new SyncmaticManager(this);
+        this.syncmaticaManager = new SyncmaticaManager(this);
         this.quotaService = new QuotaService();
         this.playerIdentifierProvider = new PlayerIdentifierProvider(this);
         this.debugService = new DebugService();
@@ -50,17 +53,17 @@ public class SyncmaticaContext {
         this.quotaService.startup();
         this.debugService.startup();
         this.isStarted = true;
-        this.syncmaticManager.startup();
+        this.syncmaticaManager.startup();
     }
 
     public void shutdown() {
         this.quotaService.shutdown();
         this.debugService.shutdown();
         this.isStarted = false;
-        this.syncmaticManager.shutdown();
+        this.syncmaticaManager.shutdown();
     }
 
-    public boolean checkPartnerVersion(final String version) {
+    public boolean checkPartnerVersion(String version) {
         return !version.equals("0.0.1");
     }
 
@@ -77,26 +80,24 @@ public class SyncmaticaContext {
         try {
             configuration = new Gson().fromJson(new BufferedReader(new FileReader(configFile)), JsonObject.class);
             attemptToLoad = true;
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             configuration = new JsonObject();
         }
         boolean needsRewrite = loadConfigurationForService(quotaService, configuration, attemptToLoad);
         needsRewrite |= loadConfigurationForService(debugService, configuration, attemptToLoad);
         if (needsRewrite) {
-            try (
-                    final Writer writer = new BufferedWriter(new FileWriter(getAndCreateConfigFile()))
-            ) {
-                final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                final String jsonString = gson.toJson(configuration);
+            try (Writer writer = new BufferedWriter(new FileWriter(getAndCreateConfigFile()))) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                String jsonString = gson.toJson(configuration);
                 writer.write(jsonString);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private Boolean loadConfigurationForService(final IService service, final JsonObject configuration, final boolean attemptToLoad) {
-        final String configKey = service.getConfigKey();
+    private Boolean loadConfigurationForService(IService service, JsonObject configuration, boolean attemptToLoad) {
+        String configKey = service.getConfigKey();
         JsonObject serviceJson = null;
         JsonConfiguration serviceConfiguration = null;
         boolean started = false;
@@ -112,7 +113,7 @@ public class SyncmaticaContext {
                         return false;
                     }
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -134,7 +135,7 @@ public class SyncmaticaContext {
     public static class DuplicateContextAssignmentException extends RuntimeException {
         private static final long serialVersionUID = -5147544661160756303L;
 
-        public DuplicateContextAssignmentException(final String reason) {
+        public DuplicateContextAssignmentException(String reason) {
             super(reason);
         }
     }
@@ -142,7 +143,7 @@ public class SyncmaticaContext {
     public static class ContextMismatchException extends RuntimeException {
         private static final long serialVersionUID = 2769376183212635479L;
 
-        public ContextMismatchException(final String reason) {
+        public ContextMismatchException(String reason) {
             super(reason);
         }
     }

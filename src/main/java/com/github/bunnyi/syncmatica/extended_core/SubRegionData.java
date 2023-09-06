@@ -17,7 +17,7 @@ public class SubRegionData {
         this(false, null);
     }
 
-    public SubRegionData(final boolean isModified, final Map<String, SubRegionPlacementModification> modificationData) {
+    public SubRegionData(boolean isModified, Map<String, SubRegionPlacementModification> modificationData) {
         this.isModified = isModified;
         this.modificationData = modificationData;
     }
@@ -27,25 +27,17 @@ public class SubRegionData {
         modificationData = null;
     }
 
-    public void modify(
-            final String name,
-            final BlockPos position,
-            final BlockRotation rotation,
-            final BlockMirror mirror
-    ) {
-        modify(
-                new SubRegionPlacementModification(
-                        name,
-                        position,
-                        rotation,
-                        mirror
-                )
-        );
+    public static SubRegionData fromJson(JsonElement obj) {
+        SubRegionData newSubRegionData = new SubRegionData();
+        newSubRegionData.isModified = true;
+        for (JsonElement modification : obj.getAsJsonArray()) {
+            newSubRegionData.modify(SubRegionPlacementModification.fromJson(modification.getAsJsonObject()));
+        }
+        return newSubRegionData;
     }
 
     public void modify(final SubRegionPlacementModification subRegionPlacementModification) {
         if (subRegionPlacementModification == null) {
-
             return;
         }
         isModified = true;
@@ -68,35 +60,23 @@ public class SubRegionData {
         return modificationDataToJson();
     }
 
-    private JsonElement modificationDataToJson() {
-        final JsonArray arr = new JsonArray();
-
-        for (final Map.Entry<String, SubRegionPlacementModification> entry : modificationData.entrySet()) {
-            arr.add(entry.getValue().toJson());
-        }
-
-        return arr;
+    public void modify(String name, BlockPos position, BlockRotation rotation, BlockMirror mirror) {
+        modify(new SubRegionPlacementModification(name, position, rotation, mirror));
     }
 
-    public static SubRegionData fromJson(final JsonElement obj) {
-        final SubRegionData newSubRegionData = new SubRegionData();
-
-        newSubRegionData.isModified = true;
-
-        for (final JsonElement modification : obj.getAsJsonArray()) {
-            newSubRegionData.modify(SubRegionPlacementModification.fromJson(modification.getAsJsonObject()));
+    private JsonElement modificationDataToJson() {
+        JsonArray arr = new JsonArray();
+        for (Map.Entry<String, SubRegionPlacementModification> entry : modificationData.entrySet()) {
+            arr.add(entry.getValue().toJson());
         }
-
-        return newSubRegionData;
+        return arr;
     }
 
     @Override
     public String toString() {
         if (!isModified) {
-
             return "[]";
         }
-
         return modificationData == null ? "[ERROR:null]" : modificationData.toString();
     }
 }

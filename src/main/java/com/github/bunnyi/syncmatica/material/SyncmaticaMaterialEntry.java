@@ -3,12 +3,12 @@ package com.github.bunnyi.syncmatica.material;
 import java.util.function.Predicate;
 
 public class SyncmaticaMaterialEntry {
+    public static final Unclaimed UNCLAIMED = new Unclaimed();
+    public static final Unfinished UNFINISHED = new Unfinished();
+
     private int amountRequired;
     private int amountPresent;
     private String claimedBy;
-
-    public static final Unclaimed UNCLAIMED = new Unclaimed();
-    public static final Unfinished UNFINISHED = new Unfinished();
 
     public int getAmountRequired() {
         return amountRequired;
@@ -32,14 +32,14 @@ public class SyncmaticaMaterialEntry {
 
     public static class Unclaimed implements Predicate<SyncmaticaMaterialEntry> {
         @Override
-        public boolean test(final SyncmaticaMaterialEntry arg0) {
+        public boolean test(SyncmaticaMaterialEntry arg0) {
             return !arg0.isClaimed();
         }
     }
 
     public static class Unfinished implements Predicate<SyncmaticaMaterialEntry> {
         @Override
-        public boolean test(final SyncmaticaMaterialEntry arg0) {
+        public boolean test(SyncmaticaMaterialEntry arg0) {
             return !arg0.isFinished();
         }
     }

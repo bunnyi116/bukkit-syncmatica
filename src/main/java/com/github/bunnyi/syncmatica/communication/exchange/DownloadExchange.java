@@ -1,7 +1,7 @@
 package com.github.bunnyi.syncmatica.communication.exchange;
 
-import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.ServerPlacement;
+import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.communication.ExchangeTarget;
 import com.github.bunnyi.syncmatica.communication.MessageType;
 import com.github.bunnyi.syncmatica.communication.PacketType;
@@ -9,7 +9,6 @@ import com.github.bunnyi.syncmatica.util.Identifier;
 import com.github.bunnyi.syncmatica.util.PacketByteBuf;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -26,16 +25,16 @@ public class DownloadExchange extends Exchange {
     private final File downloadFile;
     private int bytesSent;
 
-    public DownloadExchange(final ServerPlacement syncmatic, final File downloadFile, final ExchangeTarget partner, final SyncmaticaContext context) throws IOException, NoSuchAlgorithmException {
+    public DownloadExchange(ServerPlacement syncmatic, File downloadFile, ExchangeTarget partner, SyncmaticaContext context) throws IOException, NoSuchAlgorithmException {
         super(partner, context);
+        OutputStream os = Files.newOutputStream(downloadFile.toPath()); //NOSONAR
         this.downloadFile = downloadFile;
-        final OutputStream os = Files.newOutputStream(downloadFile.toPath()); //NOSONAR
-        toDownload = syncmatic;
-        md5 = MessageDigest.getInstance("MD5");
-        outputStream = new DigestOutputStream(os, md5);
+        this.toDownload = syncmatic;
+        this.md5 = MessageDigest.getInstance("MD5");
+        this.outputStream = new DigestOutputStream(os, md5);
     }
 
-    public boolean checkPacket(final Identifier id, final PacketByteBuf packetBuf) {
+    public boolean checkPacket(Identifier id, PacketByteBuf packetBuf) {
         if (id.equals(PacketType.SEND_LITEMATIC.identifier)
                 || id.equals(PacketType.FINISHED_LITEMATIC.identifier)
                 || id.equals(PacketType.CANCEL_LITEMATIC.identifier)) {
@@ -44,8 +43,8 @@ public class DownloadExchange extends Exchange {
         return false;
     }
 
-    public void handle(final Identifier id, final PacketByteBuf packetBuf) {
-        packetBuf.readUuid(); //skips the UUID
+    public void handle(Identifier id, PacketByteBuf packetBuf) {
+        packetBuf.readUuid(); // 跳过UUID
         if (id.equals(PacketType.SEND_LITEMATIC.identifier)) {
             int size = packetBuf.readInt();
             bytesSent += size;
@@ -59,12 +58,12 @@ public class DownloadExchange extends Exchange {
             }
             try {
                 packetBuf.readBytes(outputStream, size);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 close(true);
                 e.printStackTrace();
                 return;
             }
-            final PacketByteBuf packetByteBuf = new PacketByteBuf();
+            PacketByteBuf packetByteBuf = new PacketByteBuf();
             packetByteBuf.writeUuid(toDownload.getId());
             partner.sendPacket(PacketType.RECEIVED_LITEMATIC.identifier, packetByteBuf, context);
             return;
@@ -72,12 +71,12 @@ public class DownloadExchange extends Exchange {
         if (id.equals(PacketType.FINISHED_LITEMATIC.identifier)) {
             try {
                 outputStream.flush();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 close(false);
                 e.printStackTrace();
                 return;
             }
-            final UUID downloadHash = UUID.nameUUIDFromBytes(md5.digest());
+            UUID downloadHash = UUID.nameUUIDFromBytes(md5.digest());
             if (downloadHash.equals(toDownload.getHash())) {
                 succeed();
             } else {
@@ -92,7 +91,7 @@ public class DownloadExchange extends Exchange {
     }
 
     public void init() {
-        final PacketByteBuf packetByteBuf = new PacketByteBuf();
+        PacketByteBuf packetByteBuf = new PacketByteBuf();
         packetByteBuf.writeUuid(toDownload.getId());
         partner.sendPacket(PacketType.REQUEST_LITEMATIC.identifier, packetByteBuf, context);
     }
@@ -105,17 +104,17 @@ public class DownloadExchange extends Exchange {
         }
         try {
             outputStream.close();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         if (!isSuccessful() && downloadFile.exists()) {
-            downloadFile.delete(); // NOSONAR
+            downloadFile.delete();
         }
     }
 
     @Override
     public void sendCancelPacket() {
-        final PacketByteBuf packetByteBuf = new PacketByteBuf();
+        PacketByteBuf packetByteBuf = new PacketByteBuf();
         packetByteBuf.writeUuid(toDownload.getId());
         partner.sendPacket(PacketType.CANCEL_LITEMATIC.identifier, packetByteBuf, context);
     }

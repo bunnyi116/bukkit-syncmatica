@@ -11,42 +11,42 @@ public class JsonConfiguration implements IServiceConfiguration {
     public final JsonObject configuration;
     private Boolean wasError;
 
-    public JsonConfiguration(final JsonObject configuration) {
+    public JsonConfiguration(JsonObject configuration) {
         this.configuration = configuration;
-        wasError = false;
+        this.wasError = false;
     }
 
     @Override
-    public void loadBoolean(final String key, final Consumer<Boolean> loader) {
+    public void loadBoolean(String key, Consumer<Boolean> loader) {
         try {
-            final JsonElement elem = configuration.get(key);
+            JsonElement elem = configuration.get(key);
             if (elem != null) {
                 loader.accept(elem.getAsBoolean());
             }
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             wasError = true;
         }
     }
 
     @Override
-    public void saveBoolean(final String key, final Boolean value) {
+    public void saveBoolean(String key, Boolean value) {
         configuration.addProperty(key, value);
     }
 
     @Override
-    public void loadInteger(final String key, final IntConsumer loader) {
+    public void loadInteger(String key, IntConsumer loader) {
         try {
-            final JsonElement elem = configuration.get(key);
+            JsonElement elem = configuration.get(key);
             if (elem != null) {
                 loader.accept(elem.getAsInt());
             }
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             wasError = true;
         }
     }
 
     @Override
-    public void saveInteger(final String key, final Integer value) {
+    public void saveInteger(String key, Integer value) {
         configuration.addProperty(key, value);
     }
 

@@ -7,7 +7,7 @@ public class DeliveryPosition extends ServerPosition {
 
     private final int amount;
 
-    public DeliveryPosition(final BlockPos pos, final String dim, final int amount) {
+    public DeliveryPosition(BlockPos pos, String dim, int amount) {
         super(pos, dim);
         this.amount = amount;
     }

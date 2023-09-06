@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class ServerPosition {
-    private final BlockPos position;
-    private final String dimensionId;
+    private final BlockPos position;    // 原理图所在位置
+    private final String dimensionId;   // 原理图所在维度
 
     public ServerPosition(final BlockPos pos, final String dim) {
         position = pos;
@@ -22,23 +22,12 @@ public class ServerPosition {
         return dimensionId;
     }
 
-    public JsonObject toJson() {
-        final JsonObject obj = new JsonObject();
-        final JsonArray arr = new JsonArray();
-        arr.add(new JsonPrimitive(position.x));
-        arr.add(new JsonPrimitive(position.y));
-        arr.add(new JsonPrimitive(position.z));
-        obj.add("position", arr);
-        obj.add("dimension", new JsonPrimitive(dimensionId));
-        return obj;
-    }
-
-    public static ServerPosition fromJson(final JsonObject obj) {
+    public static ServerPosition fromJson(JsonObject obj) {
         if (obj.has("position") && obj.has("dimension")) {
-            final int x;
-            final int y;
-            final int z;
-            final JsonArray arr = obj.get("position").getAsJsonArray();
+            int x;
+            int y;
+            int z;
+            JsonArray arr = obj.get("position").getAsJsonArray();
             x = arr.get(0).getAsInt();
             y = arr.get(1).getAsInt();
             z = arr.get(2).getAsInt();
@@ -46,5 +35,16 @@ public class ServerPosition {
             return new ServerPosition(pos, obj.get("dimension").getAsString());
         }
         return null;
+    }
+
+    public JsonObject toJson() {
+        JsonObject obj = new JsonObject();
+        JsonArray arr = new JsonArray();
+        arr.add(new JsonPrimitive(position.x));
+        arr.add(new JsonPrimitive(position.y));
+        arr.add(new JsonPrimitive(position.z));
+        obj.add("position", arr);
+        obj.add("dimension", new JsonPrimitive(dimensionId));
+        return obj;
     }
 }

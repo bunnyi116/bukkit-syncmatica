@@ -2,3 +2,4 @@ name: syncmatica
 version: '${project.version}'
 main: com.github.bunnyi.syncmatica.SyncmaticaPlugin
 author: Bunny_i
+api-version: '1.20'

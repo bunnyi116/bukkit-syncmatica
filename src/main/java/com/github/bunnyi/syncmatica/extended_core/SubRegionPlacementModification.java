@@ -8,61 +8,48 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public class SubRegionPlacementModification {
-    public final String name;
-    public final BlockPos position;
-    public final BlockRotation rotation;
-    public final BlockMirror mirror;
+    public final String name;               // 子区域名称
+    public final BlockPos position;         // 子区域位置
+    public final BlockRotation rotation;    // 子区域旋转
+    public final BlockMirror mirror;        // 子区域镜像
 
-    SubRegionPlacementModification(final String name, final BlockPos position, final BlockRotation rotation, final BlockMirror mirror) {
+    SubRegionPlacementModification(String name, BlockPos position, BlockRotation rotation, BlockMirror mirror) {
         this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.mirror = mirror;
     }
 
-    public JsonObject toJson() {
-        final JsonObject obj = new JsonObject();
-
-        final JsonArray arr = new JsonArray();
-        arr.add(position.x);
-        arr.add(position.y);
-        arr.add(position.z);
-        obj.add("position", arr);
-
-        obj.add("name", new JsonPrimitive(name));
-        obj.add("rotation", new JsonPrimitive(rotation.name()));
-        obj.add("mirror", new JsonPrimitive(mirror.name()));
-
-        return obj;
-    }
-
-    public static SubRegionPlacementModification fromJson(final JsonObject obj) {
-        if (
-                !obj.has("name")
-                        || !obj.has("position")
-                        || !obj.has("rotation")
-                        || !obj.has("mirror")
-        ) {
-
+    public static SubRegionPlacementModification fromJson(JsonObject obj) {
+        if (!obj.has("name") || !obj.has("position") || !obj.has("rotation") || !obj.has("mirror")) {
             return null;
         }
-        final String name = obj.get("name").getAsString();
-
-        final JsonArray arr = obj.get("position").getAsJsonArray();
+        String name = obj.get("name").getAsString();
+        JsonArray arr = obj.get("position").getAsJsonArray();
         if (arr.size() != 3) {
-
             return null;
         }
-        final BlockPos position = new BlockPos(
+        BlockPos position = new BlockPos(
                 arr.get(0).getAsInt(),
                 arr.get(1).getAsInt(),
                 arr.get(2).getAsInt()
         );
-
-        final BlockRotation rotation = BlockRotation.valueOf(obj.get("rotation").getAsString());
-        final BlockMirror mirror = BlockMirror.valueOf(obj.get("mirror").getAsString());
-
+        BlockRotation rotation = BlockRotation.valueOf(obj.get("rotation").getAsString());
+        BlockMirror mirror = BlockMirror.valueOf(obj.get("mirror").getAsString());
         return new SubRegionPlacementModification(name, position, rotation, mirror);
+    }
+
+    public JsonObject toJson() {
+        JsonObject obj = new JsonObject();
+        JsonArray arr = new JsonArray();
+        arr.add(position.x);
+        arr.add(position.y);
+        arr.add(position.z);
+        obj.add("position", arr);
+        obj.add("name", new JsonPrimitive(name));
+        obj.add("rotation", new JsonPrimitive(rotation.name()));
+        obj.add("mirror", new JsonPrimitive(mirror.name()));
+        return obj;
     }
 
     @Override

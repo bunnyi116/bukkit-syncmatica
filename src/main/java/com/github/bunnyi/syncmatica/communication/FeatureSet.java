@@ -59,6 +59,4 @@ public class FeatureSet {
     public boolean hasFeature(Feature feature) {
         return features.contains(feature);
     }
-
-
 }

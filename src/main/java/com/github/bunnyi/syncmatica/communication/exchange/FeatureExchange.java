@@ -4,16 +4,16 @@ import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.communication.ExchangeTarget;
 import com.github.bunnyi.syncmatica.communication.FeatureSet;
 import com.github.bunnyi.syncmatica.communication.PacketType;
-import com.github.bunnyi.syncmatica.util.PacketByteBuf;
 import com.github.bunnyi.syncmatica.util.Identifier;
+import com.github.bunnyi.syncmatica.util.PacketByteBuf;
 
 public abstract class FeatureExchange extends Exchange {
 
-    protected FeatureExchange(final ExchangeTarget partner, final SyncmaticaContext con) {
+    protected FeatureExchange(ExchangeTarget partner, SyncmaticaContext con) {
         super(partner, con);
     }
 
-    public boolean checkPacket(final Identifier id, final PacketByteBuf packetBuf) {
+    public boolean checkPacket(Identifier id, PacketByteBuf packetBuf) {
         return id.equals(PacketType.FEATURE_REQUEST.identifier)
                 || id.equals(PacketType.FEATURE.identifier);
     }

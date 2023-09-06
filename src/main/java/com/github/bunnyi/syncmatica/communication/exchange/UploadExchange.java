@@ -1,43 +1,49 @@
 package com.github.bunnyi.syncmatica.communication.exchange;
 
-import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.ServerPlacement;
+import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.communication.ExchangeTarget;
 import com.github.bunnyi.syncmatica.communication.PacketType;
-import com.github.bunnyi.syncmatica.util.PacketByteBuf;
 import com.github.bunnyi.syncmatica.util.Identifier;
+import com.github.bunnyi.syncmatica.util.PacketByteBuf;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 // uploading part of transmit data exchange
 // pairs with Download Exchange
 
 public class UploadExchange extends Exchange {
-
-    // The maximum buffer size for CustomPayloadPackets is actually 32767
-    // so 32768 is a bad value to send - thus adjusted it to 16384 - exactly halved
+    // CustomPayloadPackets的最大缓冲区大小实际上是32767
+    // 因此32768是一个错误的发送值，因此将其调整为16384，正好减半
     private static final int BUFFER_SIZE = 16384;
 
     private final ServerPlacement toUpload;
     private final InputStream inputStream;
     private final byte[] buffer = new byte[BUFFER_SIZE];
 
-    public UploadExchange(final ServerPlacement syncmatic, final File uploadFile, final ExchangeTarget partner, final SyncmaticaContext con) throws FileNotFoundException {
+    public UploadExchange(ServerPlacement syncmatic, File uploadFile, ExchangeTarget partner, SyncmaticaContext con) {
         super(partner, con);
-        toUpload = syncmatic;
-        inputStream = new FileInputStream(uploadFile);
+        this.toUpload = syncmatic;
+        InputStream inputStream = null;
+        try {
+            inputStream = Files.newInputStream(uploadFile.toPath());
+        } catch (IOException ignored) {
+        }
+        this.inputStream = inputStream;
     }
 
-    public boolean checkPacket(final Identifier id, final PacketByteBuf packetBuf) {
-        if (id.equals(PacketType.RECEIVED_LITEMATIC.identifier)
-                || id.equals(PacketType.CANCEL_LITEMATIC.identifier)) {
+    public boolean checkPacket(Identifier id, PacketByteBuf packetBuf) {
+        if (id.equals(PacketType.RECEIVED_LITEMATIC.identifier) || id.equals(PacketType.CANCEL_LITEMATIC.identifier)) {
             return checkUUID(packetBuf, toUpload.getId());
         }
         return false;
     }
 
-    public void handle(final Identifier id, final PacketByteBuf packetBuf) {
-        packetBuf.readUuid(); // uncertain if the data has to be consumed
+    public void handle(Identifier id, PacketByteBuf packetBuf) {
+        packetBuf.readUuid();
         if (id.equals(PacketType.RECEIVED_LITEMATIC.identifier)) {
             send();
         }
@@ -47,11 +53,13 @@ public class UploadExchange extends Exchange {
     }
 
     private void send() {
-        // might fail when an empty file is attempted to be transmitted
-        int bytesRead;
+        // 尝试传输空文件时可能会失败
+        int bytesRead = -1;
         try {
-            bytesRead = inputStream.read(buffer);
-        } catch (final IOException e) {
+            if (inputStream != null) {
+                bytesRead = inputStream.read(buffer);
+            }
+        } catch (IOException e) {
             close(true);
             e.printStackTrace();
             return;
@@ -67,7 +75,7 @@ public class UploadExchange extends Exchange {
         send();
     }
 
-    private void sendData(final int bytesRead) {
+    private void sendData(int bytesRead) {
         PacketByteBuf packetByteBuf = new PacketByteBuf();
         packetByteBuf.writeUuid(toUpload.getId());
         packetByteBuf.writeInt(bytesRead);
@@ -76,7 +84,7 @@ public class UploadExchange extends Exchange {
     }
 
     private void sendFinish() {
-        final PacketByteBuf packetByteBuf = new PacketByteBuf();
+        PacketByteBuf packetByteBuf = new PacketByteBuf();
         packetByteBuf.writeUuid(toUpload.getId());
         partner.sendPacket(PacketType.FINISHED_LITEMATIC.identifier, packetByteBuf, context);
         succeed();
@@ -85,15 +93,17 @@ public class UploadExchange extends Exchange {
     @Override
     protected void onClose() {
         try {
-            inputStream.close();
-        } catch (final IOException e) {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void sendCancelPacket() {
-        final PacketByteBuf packetByteBuf = new PacketByteBuf();
+        PacketByteBuf packetByteBuf = new PacketByteBuf();
         packetByteBuf.writeUuid(toUpload.getId());
         partner.sendPacket(PacketType.CANCEL_LITEMATIC.identifier, packetByteBuf, context);
     }

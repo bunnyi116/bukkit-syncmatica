@@ -1,14 +1,13 @@
 package com.github.bunnyi.syncmatica;
 
 public enum Feature {
-    CORE, // every feature that's part of 0.1.0 - it doesn't make sense to divide those further since compatability with 0.0 of future versions
-    // cannot be maintained and the version is very alpha.
-    FEATURE, // the possibility of reporting on ones own features during version exchange
-    MODIFY, // commands to modify the placement of a syncmatic placement on the server
-    MESSAGE, // ability to send messages to display from server to client
-    QUOTA,  // quota on client uploads to the server
-    DEBUG,  // ability to configure debugging
-    CORE_EX; // extended basic features - such as who owns a placement and subregion sharing
+    CORE,       // 作为 0.1.0 一部分的每个功能 - 进一步划分这些功能是没有意义的，因为与未来版本的 0.0 兼容无法维护，版本非常alpha。
+    FEATURE,    // 在版本交换期间报告自己的功能的可能性
+    MODIFY,     // 命令以修改同步放置的位置在服务器上的位置
+    MESSAGE,    // 能够将消息从服务器发送到客户端以显示
+    QUOTA,      // 客户端上载到服务器的配额
+    DEBUG,      // 能够配置调试
+    CORE_EX;    // 扩展的基本功能 - 例如展示位置和次区域共享的所有者
 
     public static Feature fromString(final String s) {
         for (final Feature f : Feature.values()) {

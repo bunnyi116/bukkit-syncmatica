@@ -1,7 +1,7 @@
 package com.github.bunnyi.syncmatica.communication.exchange;
 
-import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.ServerPlacement;
+import com.github.bunnyi.syncmatica.SyncmaticaContext;
 import com.github.bunnyi.syncmatica.communication.ExchangeTarget;
 import com.github.bunnyi.syncmatica.communication.PacketType;
 import com.github.bunnyi.syncmatica.extended_core.PlayerIdentifier;
@@ -13,42 +13,39 @@ import java.util.UUID;
 public class ModifyExchangeServer extends Exchange {
 
     private final ServerPlacement placement;
-    UUID placementId;
+    private final UUID placementId;
 
-    public ModifyExchangeServer(final UUID placeId, final ExchangeTarget partner, final SyncmaticaContext con) {
+    public ModifyExchangeServer(UUID placeId, ExchangeTarget partner, SyncmaticaContext con) {
         super(partner, con);
-        placementId = placeId;
-        placement = con.syncmaticManager.getPlacement(placementId);
+        this.placementId = placeId;
+        this.placement = con.syncmaticaManager.getPlacement(placementId);
     }
 
-    public boolean checkPacket(final Identifier id, final PacketByteBuf packetBuf) {
+    public boolean checkPacket(Identifier id, PacketByteBuf packetBuf) {
         return id.equals(PacketType.MODIFY_FINISH.identifier) && checkUUID(packetBuf, placement.getId());
     }
 
-    public void handle(final Identifier id, final PacketByteBuf packetBuf) {
-        packetBuf.readUuid(); // consume uuid
+    public void handle(Identifier id, PacketByteBuf packetBuf) {
+        packetBuf.readUuid(); // 跳过UUID
         if (id.equals(PacketType.MODIFY_FINISH.identifier)) {
             context.communicationManager.receivePositionData(placement, packetBuf, partner);
-
-            final PlayerIdentifier identifier = context.playerIdentifierProvider.createOrGet(
-                    partner
-            );
+            PlayerIdentifier identifier = context.playerIdentifierProvider.createOrGet(partner);
             placement.setLastModifiedBy(identifier);
-            context.syncmaticManager.updateServerPlacement(placement);
+            context.syncmaticaManager.updateServerPlacement(placement);
             succeed();
         }
     }
 
     public void init() {
         if (getPlacement() == null || context.communicationManager.getModifier(placement) != null) {
-            close(true); // equivalent to deny
+            close(true); // 相当于拒绝
         } else {
             accept();
         }
     }
 
     private void accept() {
-        final PacketByteBuf buf = new PacketByteBuf();
+        PacketByteBuf buf = new PacketByteBuf();
         buf.writeUuid(placement.getId());
         partner.sendPacket(PacketType.MODIFY_REQUEST_ACCEPT.identifier, buf, context);
         context.communicationManager.setModifier(placement, this);
@@ -71,5 +68,4 @@ public class ModifyExchangeServer extends Exchange {
             context.communicationManager.setModifier(placement, null);
         }
     }
-
 }

@@ -30,7 +30,7 @@ public class ExchangeTarget {
     public void sendPacket(Identifier identifier, PacketByteBuf packetBuf, SyncmaticaContext context) {
         context.debugService.logSendPacket(identifier, persistentName);
         byte[] data = packetBuf.toArray();
-        Bukkit.getLogger().info(String.format("[发送] [%s]: %s", identifier.toString(), StringTools.getHexString(data)));
+        // Bukkit.getLogger().info(String.format("[发送] [%s]: %s", identifier.toString(), StringTools.getHexString(data)));
         player.sendPluginMessage(plugin, identifier.toString(), data);
     }
 
