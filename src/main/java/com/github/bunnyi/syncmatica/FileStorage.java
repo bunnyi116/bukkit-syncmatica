@@ -2,7 +2,6 @@ package com.github.bunnyi.syncmatica;
 
 import com.github.bunnyi.syncmatica.util.SyncmaticaUtil;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

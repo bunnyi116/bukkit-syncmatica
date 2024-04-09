@@ -4,7 +4,6 @@ import com.github.bunnyi.syncmatica.communication.ExchangeTarget;
 import com.github.bunnyi.syncmatica.communication.PacketType;
 import com.github.bunnyi.syncmatica.util.Identifier;
 import com.github.bunnyi.syncmatica.util.PacketByteBuf;
-import com.github.bunnyi.syncmatica.util.StringTools;
 import org.bukkit.Bukkit;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;

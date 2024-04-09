@@ -5,8 +5,6 @@ import com.github.bunnyi.syncmatica.SyncmaticaPlugin;
 import com.github.bunnyi.syncmatica.communication.exchange.Exchange;
 import com.github.bunnyi.syncmatica.util.Identifier;
 import com.github.bunnyi.syncmatica.util.PacketByteBuf;
-import com.github.bunnyi.syncmatica.util.StringTools;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
